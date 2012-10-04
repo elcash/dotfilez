@@ -1,0 +1,166 @@
+####################################
+#######~~ lance's .muttrc ~~#######
+####################################
+# avoids grouping messages with subject 'hi'
+set nostrict_threads
+set sort_aux=date-received
+
+# where is sendmail?
+set sendmail="/usr/bin/msmtp"
+
+# rewrite From fields (can be overridden with send-hooks)
+set from="lance@levinehat.com"
+set use_from=yes
+
+# don't confuse outlook [express]
+set envelope_from="yes"
+
+# headers can be edited from inside vim as well
+set edit_headers
+
+# when forwarding messages, forward attachments
+set mime_forward=yes
+set mime_forward_rest=yes
+
+# I hate split screen
+#set pager_index_lines=8
+
+###### lbdb
+# filter all messages thru procmail
+# :0hc
+# | lbdb-fetchaddr -d "%Y%m%d" -x 'from:to:resent-from:resent-to:cc'
+
+# or send mboxen thru formail 
+# formail -s lbdb-fetchaddr -a < ~/tmp/mboxfile
+# query lbdb for addresses
+# using <Tab> tries to complete from aliases
+# using Q tries from lbdb
+# using Ctrl-T tries to complete, using lbdb
+set query_command="lbdbq '%s'"
+
+
+####################################
+# appearance 
+####################################
+set collapse_unread
+
+# :set print_command="/usr/bin/lpr -Pprint_queue"
+# really should be in rc because what if I want to print from somewhere else?
+set print_command="lpr"
+
+set sig_dashes
+# reduce number of headers
+ignore *
+unignore From: To: Cc: Subject: Date: X-LL-Whitelist: X-LL-Blacklist: X-Spam-Status: 
+
+# I don't need to see my name for owner/group in folder display
+set folder_format="%2C %t %N %F %8s %d %f %>x"
+
+# I prefer plaintext
+alternative_order text/enriched text/plain text/html
+auto_view text/html
+
+# I want to know when the message is fin
+set tilde
+
+####################################
+# mailboxes 
+####################################
+set postponed="=postponed"
+# save a copy of all outgoing mail
+set copy=yes
+set record="=sent"
+
+# mailboxes
+set mbox_type=mbox
+# folder default?
+set folder = /home/lance/Mail
+# only use for these would be when calling mutt from cli with options; I dont
+# also may be used for notifying "You have unread mail"
+#mailboxes =mbox =authorizenet =Lists/mutt =spam =Lists/debian =Lists/ubuntu =orderconfirms
+mailboxes =/var/spool/mail/lance
+
+# we are now using the UNIX spool
+#set spoolfile=/home/desimo/Mail/mbox
+set spoolfile=/var/spool/mail/lance
+
+####################################
+# leave me alone
+####################################
+# do not force to save outgoing mail by username
+unset force_name
+# save w/o asking
+unset confirmappend
+# delete w/o asking
+set delete
+unset reply_self
+unset read_only
+unset beep
+
+
+# Don't ask to move read messages to mbox on exit
+set move=no
+set nomark_old # don't mark unread messages as Old
+
+####################################
+# bindings for more like vi
+####################################
+
+bind index      g   first-entry
+bind index      G   last-entry
+bind pager      g  top
+bind pager      G  bottom
+bind pager     \eZ  sync-mailbox
+bind pager      b  previous-page
+bind pager      *  flag-message
+bind pager      q  exit
+bind index      \eZ  sync-mailbox
+bind index      * flag-message
+
+####################################
+# all macros here
+####################################
+
+macro index,pager d "s=trash\n" "mv to trash"
+macro index,pager X "s=spam\n" "mv to spam"
+
+### jobapplicants_yes
+macro index,pager \eY "s=Contacts/jobapplicants_yes\n" "mv to jobapplicants_yes"
+
+### jobapplicants_no
+macro index,pager \eN "s=Contacts/jobapplicants_no\n" "mv to jobapplicants_no"
+
+### jobapplicants_old
+macro index,pager \eO "s=Contacts/jobapplicants_old\n" "archive old jobapplicants people"
+
+# external files edits
+# edit ~/.muttrc
+macro index,pager,generic,attach \e.            "!vim ~/.muttrc\n:source ~/.muttrc\n" "edit .muttrc and reload"
+# edit ~/.mutt/aliases
+macro   index,pager,generic,attach   \ea        "!vim ~/.mutt/aliases\n:source ~/.mutt/aliases\n" "edit aliases and reload"
+# edit ~/.mailcap
+macro  index,pager,generic,attach  \em          "!vim ~/.mailcap\n" "edit mailcap"
+# edit ~/.procmailrc
+macro  index,pager,generic,attach  \ep          "!vim ~/.procmailrc\n" "edit procmailrc"
+# edit ~/.fetchmailrc
+macro  index,pager,generic,attach  \ef         "!vim ~/.fetchmailrc\n" "edit fetchmailrc"
+
+# call urlview
+macro index,pager                  \eu         "|urlview\n" "call urlview to extract URLs out of a message"
+
+# start / refresh fetchmail
+macro index,pager,generic \eg "!fetchmail -d 60\n" "starts or refreshes fetchmail..."
+
+macro index,pager A "<pipe-message>abook --add-email<return>" "add the sender address to abook"
+
+################## whereis ## 
+set alias_file=~/.mutt/aliases
+set mailcap_path=~/.mailcap
+source ~/.mutt/aliases
+source ~/.mutt/colors
+source ~/.mutt/hooks
+source ~/.mutt/gnupg
+
+# leave me last 'cause I screw up the syntax coloring in this file
+set editor="vim +':set textwidth=72' +':set wrap' +\`awk '/^$/ {print i+2; exit} {i++}' %s\` %s"
+
