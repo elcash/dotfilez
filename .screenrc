@@ -1,0 +1,12 @@
+# | Screen(s): 0* bash           5:30PM  Fri, Jun/25/2004 |
+hardstatus alwayslastline "%{=b}%{G} Screen(s): %{b}%w %=%{kG}%C%A  %D, %M/%d/%Y "
+startup_message off
+altscreen on
+vbell off
+autodetach on
+crlf off
+multiuser off
+defscrollback 2500 # default: 100
+silencewait 45     # default: 30
+msgwait 15
+shelltitle "$ |bash"
